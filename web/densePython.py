@@ -5,7 +5,6 @@ from keras.layers import Conv2D, MaxPooling2D,GlobalAveragePooling2D
 from keras.layers import Activation, Dropout, BatchNormalization, Flatten, Dense, AvgPool2D,MaxPool2D,Input,SeparableConv2D
 from keras.models import Sequential, Model
 from keras.callbacks import ModelCheckpoint, Callback, EarlyStopping
-# from keras.applications.vgg16 import VGG16, preprocess_input
 from keras.optimizers import Adam
 from skimage.io import imread
 import tensorflow as tf
@@ -40,12 +39,9 @@ model.compile(optimizer='adam', loss="binary_crossentropy",metrics=['accuracy'])
 data_dir = Path('./public')
 model.load_weights("./denseNet169_weights.hdf5");
 imgGrab = data_dir.glob(str(sys.argv[1]))
-# imgGrab = data_dir.glob(str('COVID19(575).jpg'))
 
 test_data = []
 for img in imgGrab:
-    # print('{"imagename":"'+str(img)+'"}')
-    # sys.stdout.flush()
     img = cv2.imread(str(img))
     img = cv2.resize(img, (224,224))
     if img.shape[2] ==1:
@@ -58,7 +54,6 @@ for img in imgGrab:
 test_data = np.array(test_data)
 
 densePred = model.predict(test_data, batch_size=16)
-# label = test_generator.classes
 predicted_class_indices=densePred
 predicted_class_indices[predicted_class_indices>0.5]=1
 predicted_class_indices[predicted_class_indices<=0.5]=0
@@ -68,12 +63,4 @@ outputDense169=[]
 for i in range(predicted_class_indices.shape[0]):
     outputDense169.append(int(predicted_class_indices[i]))
 
-
-# labels = (test_generator.class_indices)
-# labels2 = dict((v,k) for k,v in labels.items())
-# predictions = [labels2[k] for k in outputDense169]
-# print(outputDense169)
 print('{"status":"'+str(outputDense169[0])+'"}')
-# print (labels)
-# print (predictions)
-# print(preds)
